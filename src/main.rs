@@ -6,11 +6,10 @@ use std::io;
 
 use crossterm::{
     event::{
-        self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEventKind,
-        KeyModifiers,
+        self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEventKind, KeyModifiers,
     },
     execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
 use ratatui::{Terminal, backend::CrosstermBackend};
 
@@ -46,35 +45,33 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
             break;
         }
 
-        if event::poll(std::time::Duration::from_millis(50))? {
-            if let Event::Key(key) = event::read()? {
-                if key.kind == KeyEventKind::Press {
-                    if key.modifiers.contains(KeyModifiers::CONTROL)
-                        && key.code == KeyCode::Char('c')
-                    {
-                        app.quit = true;
-                        continue;
+        if event::poll(std::time::Duration::from_millis(50))?
+            && let Event::Key(key) = event::read()?
+            && key.kind == KeyEventKind::Press
+        {
+            if key.modifiers.contains(KeyModifiers::CONTROL) && key.code == KeyCode::Char('c') {
+                app.quit = true;
+                continue;
+            }
+            match key.code {
+                KeyCode::Char('q') => app.quit = true,
+                KeyCode::Esc => app.quit = true,
+                KeyCode::Enter => app.submit(),
+                KeyCode::Char(c) => match c {
+                    'a' | 'c' | 'd' | 'e' | 'f' | 'g' => {
+                        app.type_char(c.to_ascii_uppercase());
                     }
-                    match key.code {
-                        KeyCode::Char('q') => app.quit = true,
-                        KeyCode::Esc => app.quit = true,
-                        KeyCode::Enter => app.submit(),
-                        KeyCode::Char(c) => match c {
-                            'a' | 'c' | 'd' | 'e' | 'f' | 'g' => {
-                                app.type_char(c.to_ascii_uppercase());
-                            }
-                            'A'..='G' => app.type_char(c),
-                            'b' => app.type_char('b'),
-                            '#' => app.type_char('#'),
-                            _ => {}
-                        },
-                        KeyCode::Backspace => app.backspace(),
-                        _ => {}
-                    }
-                }
+                    'A'..='G' => app.type_char(c),
+                    'b' => app.type_char('b'),
+                    '#' => app.type_char('#'),
+                    _ => {}
+                },
+                KeyCode::Backspace => app.backspace(),
+                _ => {}
             }
         }
     }
 
     Ok(())
 }
+

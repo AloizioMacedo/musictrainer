@@ -9,11 +9,11 @@ use ratatui::{
 use crate::app::App;
 use crate::music::midi_to_staff_position;
 
-const STAFF_AREA_ROWS: u16 = 25;
-const CORE_STAFF_TOP: u16 = 10;
-const CORE_STAFF_BOTTOM: u16 = 18;
+const STAFF_AREA_ROWS: u16 = 27;
+const CORE_STAFF_TOP: u16 = 6;
+const CORE_STAFF_BOTTOM: u16 = 21;
 const NOTE_COLUMN: u16 = 36;
-const STAFF_START: usize = 10;
+const STAFF_START: usize = 12;
 const STAFF_WIDTH_CHARS: usize = 62;
 
 fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
@@ -34,25 +34,30 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
 
         let is_core_staff = (CORE_STAFF_TOP as i16..=CORE_STAFF_BOTTOM as i16).contains(&area_row);
         let staff_line_idx = area_row - CORE_STAFF_TOP as i16;
-        let is_line = is_core_staff && staff_line_idx >= 0 && staff_line_idx % 2 == 0;
+        let is_line =
+            is_core_staff && staff_line_idx >= 1 && staff_line_idx <= 9 && staff_line_idx % 2 == 1;
 
         if is_line {
-            for char in &mut chars {
-                *char = '-'
-            }
+            chars.fill('─');
         }
 
         if is_core_staff {
-            let clef_str = match staff_line_idx {
-                0 => "    ,-.",
-                1 => "   /   \\",
-                2 => "  (     )",
-                3 => "   \\   /",
-                4 => "    \\ /",
-                5 => "    / \\",
-                6 => "   /   \\",
-                7 => "  /     \\",
-                8 => " /       \\",
+            let clef_str = match staff_line_idx + 2 {
+                0 => "      ⣀⣀   ",
+                1 => "    ⢠⣾⠿⣿⣇  ",
+                2 => "    ⣾⠇⠀⢸⣿  ",
+                3 => "    ⡿⠀⣠⣿⡏  ",
+                4 => "    ⣠⣾⡿⠋   ",
+                5 => "  ⣠⣾⡿⠋⠀⠀⠀  ",
+                6 => " ⣴⡿⠋⢠⡆     ",
+                7 => "⣼⡿⠁⢠⣾⣿⠿⠿⣦⡀ ",
+                8 => "⣿⠁⠀⣿⠁⢿⡄⠀⠘⣷ ",
+                9 => "⢹⣧⡀⠙⠆⠸⣇⠀⣴⡟ ",
+                10 => " ⠙⠿⣶⣤⠀⣿⠀⠋ ",
+                11 => "⠀⠀⠀⠀⠀⢸⡇   ",
+                12 => "⢠⣶⣿⣷⣦⢸⣧   ",
+                13 => "⠸⣿⣿⣿⣿⣿⠏   ",
+                 14 => "⠀⠈⠉⠉⠉     ",
                 _ => "",
             };
             for (i, c) in clef_str.chars().enumerate() {
@@ -70,9 +75,7 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
         if is_ledger_line {
             let start = NOTE_COLUMN.saturating_sub(4) as usize;
             let end = (NOTE_COLUMN + 4).min(STAFF_WIDTH_CHARS as u16 - 1) as usize;
-            for x in start..=end {
-                chars[x] = '─';
-            }
+            chars[start..=end].fill('─');
             chars[NOTE_COLUMN as usize] = '●';
         }
 
@@ -174,4 +177,3 @@ pub fn render(frame: &mut Frame, app: &App) {
     };
     frame.render_widget(feedback, main[4]);
 }
-
