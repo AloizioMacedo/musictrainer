@@ -21,7 +21,7 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
     let staff_x = area.x + area.width.saturating_sub(STAFF_WIDTH_CHARS as u16) / 2;
 
     let sp = midi_to_staff_position(app.current_note.midi);
-    let note_row = CORE_STAFF_BOTTOM as i16 - sp;
+    let note_row = CORE_STAFF_BOTTOM as i16 - sp - 4;
 
     for local_row in 0..STAFF_AREA_ROWS {
         let y = staff_y + local_row;
@@ -35,14 +35,14 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
         let is_core_staff = (CORE_STAFF_TOP as i16..=CORE_STAFF_BOTTOM as i16).contains(&area_row);
         let staff_line_idx = area_row - CORE_STAFF_TOP as i16;
         let is_line =
-            is_core_staff && staff_line_idx >= 1 && staff_line_idx <= 9 && staff_line_idx % 2 == 1;
+            is_core_staff && staff_line_idx >= 3 && staff_line_idx <= 11 && staff_line_idx % 2 == 1;
 
         if is_line {
             chars.fill('─');
         }
 
         if is_core_staff {
-            let clef_str = match staff_line_idx + 2 {
+            let clef_str = match staff_line_idx {
                 0 => "      ⣀⣀   ",
                 1 => "    ⢠⣾⠿⣿⣇  ",
                 2 => "    ⣾⠇⠀⢸⣿  ",
@@ -57,7 +57,7 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
                 11 => "⠀⠀⠀⠀⠀⢸⡇   ",
                 12 => "⢠⣶⣿⣷⣦⢸⣧   ",
                 13 => "⠸⣿⣿⣿⣿⣿⠏   ",
-                 14 => "⠀⠈⠉⠉⠉     ",
+                14 => "⠀⠈⠉⠉⠉     ",
                 _ => "",
             };
             for (i, c) in clef_str.chars().enumerate() {
@@ -82,7 +82,7 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
         let line_str: String = chars.into_iter().collect();
         let note_style = Style::default().fg(Color::Yellow);
         let line_style = Style::default().fg(Color::DarkGray);
-        let clef_style = Style::default().fg(Color::Cyan);
+        let clef_style = Style::default();
         let default_style = Style::default();
 
         let mut spans: Vec<Span> = Vec::new();
