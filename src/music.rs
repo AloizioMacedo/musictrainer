@@ -1,3 +1,5 @@
+use rand::{RngExt, rngs::ThreadRng};
+
 const NATURAL_PITCH_CLASSES: [u8; 7] = [4, 5, 7, 9, 11, 0, 2];
 
 const _NATURAL_NAMES: [&str; 7] = ["E", "F", "G", "A", "B", "C", "D"];
@@ -8,9 +10,9 @@ pub struct Note {
 }
 
 pub fn generate_note() -> Note {
-    use rand::Rng;
-    let mut rng = rand::thread_rng();
-    let staff_position = rng.gen_range(-6i16..=14);
+    let mut rng = ThreadRng::default();
+
+    let staff_position = rng.random_range(-6i16..=14);
     let pitch_class = staff_position_to_pitch_class(staff_position);
     Note {
         staff_position,
