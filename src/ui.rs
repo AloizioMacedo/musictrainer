@@ -66,11 +66,13 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
             }
         }
 
-        let is_ledger_line = sp % 2 == 0 && area_row % 2 == 1 && {
+        let is_ledger_line = area_row % 2 == 1 && {
             if sp > 8 {
-                area_row >= note_row && area_row <= 7
+                let first = if sp % 2 == 0 { note_row } else { note_row - 1 };
+                first <= 7 && area_row >= first && area_row <= 7
             } else if sp < 0 {
-                area_row >= 19 && area_row <= note_row
+                let last = if sp % 2 == 0 { note_row } else { note_row + 1 };
+                last >= 19 && area_row >= 19 && area_row <= last
             } else {
                 false
             }
@@ -111,7 +113,7 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
                 note_style
             } else if is_core_staff && idx < STAFF_START && ch != ' ' {
                 clef_style
-            } else if is_line && idx >= STAFF_START && ch == '─' {
+            } else if (is_line || is_ledger_line) && idx >= STAFF_START && ch == '─' {
                 line_style
             } else {
                 default_style
