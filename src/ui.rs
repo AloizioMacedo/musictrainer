@@ -66,6 +66,21 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
             }
         }
 
+        let is_ledger_line = sp % 2 == 0 && area_row % 2 == 1 && {
+            if sp > 8 {
+                area_row >= note_row && area_row <= 7
+            } else if sp < 0 {
+                area_row >= 19 && area_row <= note_row
+            } else {
+                false
+            }
+        };
+        if is_ledger_line {
+            let start = NOTE_COLUMN.saturating_sub(4) as usize;
+            let end = (NOTE_COLUMN + 4).min(STAFF_WIDTH_CHARS as u16 - 1) as usize;
+            chars[start..=end].fill('─');
+        }
+
         let note_offset = area_row - note_row;
         if (-1..=1).contains(&note_offset) {
             let notehead_str = match note_offset {
@@ -78,13 +93,6 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
                     chars[start + i] = c;
                 }
             }
-        }
-
-        let is_ledger_line = !is_core_staff && area_row == note_row && sp % 2 == 0;
-        if is_ledger_line {
-            let start = NOTE_COLUMN.saturating_sub(4) as usize;
-            let end = (NOTE_COLUMN + 4).min(STAFF_WIDTH_CHARS as u16 - 1) as usize;
-            chars[start..=end].fill('─');
         }
 
         let line_str: String = chars.into_iter().collect();

@@ -10,7 +10,7 @@ pub struct Note {
 pub fn generate_note() -> Note {
     use rand::Rng;
     let mut rng = rand::thread_rng();
-    let staff_position = rng.gen_range(-2i16..=10);
+    let staff_position = rng.gen_range(-6i16..=14);
     let pitch_class = staff_position_to_pitch_class(staff_position);
     Note {
         staff_position,
