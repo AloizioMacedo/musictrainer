@@ -130,10 +130,9 @@ pub fn render(frame: &mut Frame, app: &App) {
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Length(2),
-            Constraint::Length(STAFF_AREA_ROWS),
-            Constraint::Length(3),
-            Constraint::Length(5),
             Constraint::Min(0),
+            Constraint::Length(3),
+            Constraint::Length(1),
         ])
         .split(area);
 
@@ -147,7 +146,7 @@ pub fn render(frame: &mut Frame, app: &App) {
     let input_widget = Paragraph::new("Press A-G to answer")
         .block(Block::default().borders(Borders::ALL).title(" Input "))
         .style(Style::default().fg(Color::Gray));
-    frame.render_widget(input_widget, main[3]);
+    frame.render_widget(input_widget, main[2]);
 
     let feedback = {
         let mut spans = vec![Span::styled(
@@ -165,5 +164,5 @@ pub fn render(frame: &mut Frame, app: &App) {
         }
         Paragraph::new(Line::from(spans))
     };
-    frame.render_widget(feedback, main[4]);
+    frame.render_widget(feedback, main[3]);
 }
