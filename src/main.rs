@@ -56,17 +56,7 @@ fn run(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> 
             match key.code {
                 KeyCode::Char('q') => app.quit = true,
                 KeyCode::Esc => app.quit = true,
-                KeyCode::Enter => app.submit(),
-                KeyCode::Char(c) => match c {
-                    'a' | 'c' | 'd' | 'e' | 'f' | 'g' => {
-                        app.type_char(c.to_ascii_uppercase());
-                    }
-                    'A'..='G' => app.type_char(c),
-                    'b' => app.type_char('b'),
-                    '#' => app.type_char('#'),
-                    _ => {}
-                },
-                KeyCode::Backspace => app.backspace(),
+                KeyCode::Char(c @ 'A'..='G') | KeyCode::Char(c @ 'a'..='g') => app.answer(c),
                 _ => {}
             }
         }

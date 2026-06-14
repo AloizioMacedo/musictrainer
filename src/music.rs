@@ -23,57 +23,9 @@ pub fn staff_position_to_pitch_class(pos: i16) -> u8 {
     NATURAL_PITCH_CLASSES[idx]
 }
 
-pub fn staff_position_name(pos: i16) -> String {
+pub fn staff_name(pos: i16) -> String {
     let idx = pos.rem_euclid(7) as usize;
-    let octave = 5 + (pos - 5).div_euclid(7);
-    format!("{}{}", NATURAL_NAMES[idx], octave)
-}
-
-pub fn parse_note(input: &str) -> Option<u8> {
-    let trimmed = input.trim().to_uppercase();
-
-    let (letter, accidental) = if let Some(rest) = trimmed.strip_prefix('C') {
-        ('C', rest)
-    } else if let Some(rest) = trimmed.strip_prefix('D') {
-        ('D', rest)
-    } else if let Some(rest) = trimmed.strip_prefix('E') {
-        ('E', rest)
-    } else if let Some(rest) = trimmed.strip_prefix('F') {
-        ('F', rest)
-    } else if let Some(rest) = trimmed.strip_prefix('G') {
-        ('G', rest)
-    } else if let Some(rest) = trimmed.strip_prefix('A') {
-        ('A', rest)
-    } else if let Some(rest) = trimmed.strip_prefix('B') {
-        ('B', rest)
-    } else {
-        return None;
-    };
-
-    let semitone = match letter {
-        'C' => 0,
-        'D' => 2,
-        'E' => 4,
-        'F' => 5,
-        'G' => 7,
-        'A' => 9,
-        'B' => 11,
-        _ => return None,
-    };
-
-    let offset: i8 = match accidental {
-        "" | "N" => 0,
-        "#" | "♯" => 1,
-        "B" | "♭" => -1,
-        "##" | "♯♯" => 2,
-        "X" => 2,
-        "BB" | "♭♭" => -2,
-        _ => return None,
-    };
-
-    let pitch_class = (semitone as i8 + offset).rem_euclid(12) as u8;
-
-    Some(pitch_class)
+    NATURAL_NAMES[idx].to_string()
 }
 
 #[cfg(test)]
@@ -86,13 +38,5 @@ mod tests {
         assert_eq!(staff_position_to_pitch_class(0), 4);
         assert_eq!(staff_position_to_pitch_class(5), 0);
         assert_eq!(staff_position_to_pitch_class(8), 5);
-    }
-
-    #[test]
-    fn test_staff_position_name() {
-        assert_eq!(staff_position_name(0), "E4");
-        assert_eq!(staff_position_name(5), "C5");
-        assert_eq!(staff_position_name(-2), "C4");
-        assert_eq!(staff_position_name(8), "F5");
     }
 }

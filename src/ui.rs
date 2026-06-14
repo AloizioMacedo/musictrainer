@@ -7,7 +7,6 @@ use ratatui::{
 };
 
 use crate::app::App;
-use crate::music::staff_position_name;
 
 const STAFF_AREA_ROWS: u16 = 27;
 const CORE_STAFF_TOP: u16 = 6;
@@ -89,7 +88,7 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
         }
 
         let line_str: String = chars.into_iter().collect();
-        let note_style = Style::default().fg(Color::Yellow);
+        let note_style = Style::default().fg(Color::DarkGray);
         let line_style = Style::default().fg(Color::DarkGray);
         let clef_style = Style::default();
         let default_style = Style::default();
@@ -145,29 +144,9 @@ pub fn render(frame: &mut Frame, app: &App) {
 
     render_staff_area(frame, main[1], app);
 
-    let note_name = staff_position_name(app.current_note.staff_position);
-    let info = Paragraph::new(format!(
-        "Staff position: {}  |  Note: {}  |  Pitch class: {}",
-        app.current_note.staff_position,
-        note_name,
-        app.current_note.pitch_class,
-    ))
-    .style(Style::default().fg(Color::DarkGray));
-    frame.render_widget(info, main[2]);
-
-    let input_widget = {
-        let prompt = Span::styled(
-            "Answer (Enter to confirm): ",
-            Style::default().fg(Color::Gray),
-        );
-        let text = if app.user_input.is_empty() {
-            Span::styled("_", Style::default().fg(Color::DarkGray))
-        } else {
-            Span::styled(&app.user_input, Style::default().fg(Color::White))
-        };
-        Paragraph::new(Line::from(vec![prompt, text]))
-            .block(Block::default().borders(Borders::ALL).title(" Input "))
-    };
+    let input_widget = Paragraph::new("Press A-G to answer")
+        .block(Block::default().borders(Borders::ALL).title(" Input "))
+        .style(Style::default().fg(Color::Gray));
     frame.render_widget(input_widget, main[3]);
 
     let feedback = {

@@ -1,8 +1,9 @@
-use crate::music::{generate_note, staff_position_name, Note};
+use crate::music::{Note, generate_note};
+
+const LETTER_TO_PC: [u8; 7] = [9, 11, 0, 2, 4, 5, 7];
 
 pub struct App {
     pub current_note: Note,
-    pub user_input: String,
     pub score: u32,
     pub streak: u32,
     pub feedback_text: String,
@@ -14,7 +15,6 @@ impl App {
     pub fn new() -> Self {
         Self {
             current_note: generate_note(),
-            user_input: String::new(),
             score: 0,
             streak: 0,
             feedback_text: String::new(),
@@ -23,64 +23,18 @@ impl App {
         }
     }
 
-    pub fn type_char(&mut self, c: char) {
-        if self.user_input.is_empty() && c == 'b' {
-            return;
-        }
-        self.user_input.push(c);
-    }
-
-    pub fn backspace(&mut self) {
-        self.user_input.pop();
-    }
-
-    pub fn submit(&mut self) {
-        if self.user_input.is_empty() {
-            return;
-        }
-        let input = &self.user_input;
-        let input_pitch_class = crate::music::parse_note(input);
-
-        if let Some(pc) = input_pitch_class {
-            if pc == self.current_note.pitch_class {
-                self.score += 1;
-                self.streak += 1;
-                self.feedback_text = format!("Correct! (+{})", 1 + self.streak / 5);
-                self.feedback_ticks = 30;
-                self.current_note = generate_note();
-                self.user_input.clear();
-            } else {
-                self.streak = 0;
-                let correct = staff_position_name(self.current_note.staff_position);
-                self.feedback_text = format!(
-                    "{} is wrong, the note was {}",
-                    Self::pc_name(pc),
-                    correct
-                );
-                self.feedback_ticks = 40;
-            }
+    pub fn answer(&mut self, letter: char) {
+        let pc = LETTER_TO_PC[(letter.to_ascii_uppercase() as u8 - b'A') as usize];
+        if pc == self.current_note.pitch_class {
+            self.score += 1;
+            self.streak += 1;
+            self.feedback_text = format!("Correct! (+{})", 1 + self.streak / 5);
+            self.feedback_ticks = 30;
+            self.current_note = generate_note();
         } else {
             self.streak = 0;
-            self.feedback_text = format!("\"{}\" is not a valid note", input);
+            self.feedback_text = format!("{} is incorrect!", letter.to_ascii_uppercase());
             self.feedback_ticks = 40;
-        }
-    }
-
-    fn pc_name(pc: u8) -> &'static str {
-        match pc {
-            0 => "C",
-            1 => "C#/Db",
-            2 => "D",
-            3 => "D#/Eb",
-            4 => "E",
-            5 => "F",
-            6 => "F#/Gb",
-            7 => "G",
-            8 => "G#/Ab",
-            9 => "A",
-            10 => "A#/Bb",
-            11 => "B",
-            _ => "?",
         }
     }
 
