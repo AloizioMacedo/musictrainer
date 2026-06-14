@@ -35,7 +35,7 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
         let is_core_staff = (CORE_STAFF_TOP as i16..=CORE_STAFF_BOTTOM as i16).contains(&area_row);
         let staff_line_idx = area_row - CORE_STAFF_TOP as i16;
         let is_line =
-            is_core_staff && staff_line_idx >= 3 && staff_line_idx <= 11 && staff_line_idx % 2 == 1;
+            is_core_staff && (3..=11).contains(&staff_line_idx) && staff_line_idx % 2 == 1;
 
         if is_line {
             chars.fill('─');
@@ -67,8 +67,18 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
             }
         }
 
-        if area_row == note_row {
-            chars[NOTE_COLUMN as usize] = '●';
+        let note_offset = area_row - note_row;
+        if (-1..=1).contains(&note_offset) {
+            let notehead_str = match note_offset {
+                0 => "⢾⡷",
+                _ => "",
+            };
+            let start = NOTE_COLUMN as usize - 1;
+            for (i, c) in notehead_str.chars().enumerate() {
+                if start + i < STAFF_WIDTH_CHARS {
+                    chars[start + i] = c;
+                }
+            }
         }
 
         let is_ledger_line = !is_core_staff && area_row == note_row && sp % 2 == 0;
@@ -76,7 +86,6 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
             let start = NOTE_COLUMN.saturating_sub(4) as usize;
             let end = (NOTE_COLUMN + 4).min(STAFF_WIDTH_CHARS as u16 - 1) as usize;
             chars[start..=end].fill('─');
-            chars[NOTE_COLUMN as usize] = '●';
         }
 
         let line_str: String = chars.into_iter().collect();
@@ -86,10 +95,12 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
         let default_style = Style::default();
 
         let mut spans: Vec<Span> = Vec::new();
-        let col_note = NOTE_COLUMN as usize;
 
         for (idx, ch) in line_str.char_indices() {
-            let s = if idx == col_note && area_row == note_row {
+            let is_notehead = (-1..=1).contains(&(area_row - note_row))
+                && idx >= NOTE_COLUMN as usize - 1
+                && idx <= NOTE_COLUMN as usize;
+            let s = if is_notehead {
                 note_style
             } else if is_core_staff && idx < STAFF_START && ch != ' ' {
                 clef_style
