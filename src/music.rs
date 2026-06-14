@@ -1,6 +1,6 @@
 const NATURAL_PITCH_CLASSES: [u8; 7] = [4, 5, 7, 9, 11, 0, 2];
 
-const NATURAL_NAMES: [&str; 7] = ["E", "F", "G", "A", "B", "C", "D"];
+const _NATURAL_NAMES: [&str; 7] = ["E", "F", "G", "A", "B", "C", "D"];
 
 pub struct Note {
     pub staff_position: i16,
@@ -23,9 +23,9 @@ pub fn staff_position_to_pitch_class(pos: i16) -> u8 {
     NATURAL_PITCH_CLASSES[idx]
 }
 
-pub fn staff_name(pos: i16) -> String {
+pub fn _staff_name(pos: i16) -> String {
     let idx = pos.rem_euclid(7) as usize;
-    NATURAL_NAMES[idx].to_string()
+    _NATURAL_NAMES[idx].to_string()
 }
 
 #[cfg(test)]
