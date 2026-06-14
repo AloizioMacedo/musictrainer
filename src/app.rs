@@ -1,4 +1,4 @@
-use crate::music::{generate_note, Note};
+use crate::music::{generate_note, staff_position_name, Note};
 
 pub struct App {
     pub current_note: Note,
@@ -42,8 +42,7 @@ impl App {
         let input_pitch_class = crate::music::parse_note(input);
 
         if let Some(pc) = input_pitch_class {
-            let current_pc = self.current_note.midi % 12;
-            if pc == current_pc {
+            if pc == self.current_note.pitch_class {
                 self.score += 1;
                 self.streak += 1;
                 self.feedback_text = format!("Correct! (+{})", 1 + self.streak / 5);
@@ -52,7 +51,12 @@ impl App {
                 self.user_input.clear();
             } else {
                 self.streak = 0;
-                self.feedback_text = format!("{} is wrong, try again", Self::pc_name(pc));
+                let correct = staff_position_name(self.current_note.staff_position);
+                self.feedback_text = format!(
+                    "{} is wrong, the note was {}",
+                    Self::pc_name(pc),
+                    correct
+                );
                 self.feedback_ticks = 40;
             }
         } else {

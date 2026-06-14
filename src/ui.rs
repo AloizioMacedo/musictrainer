@@ -7,7 +7,7 @@ use ratatui::{
 };
 
 use crate::app::App;
-use crate::music::midi_to_staff_position;
+use crate::music::staff_position_name;
 
 const STAFF_AREA_ROWS: u16 = 27;
 const CORE_STAFF_TOP: u16 = 6;
@@ -20,7 +20,7 @@ fn render_staff_area(frame: &mut Frame, area: Rect, app: &App) {
     let staff_y = area.y + area.height.saturating_sub(STAFF_AREA_ROWS) / 2;
     let staff_x = area.x + area.width.saturating_sub(STAFF_WIDTH_CHARS as u16) / 2;
 
-    let sp = midi_to_staff_position(app.current_note.midi);
+    let sp = app.current_note.staff_position;
     let note_row = CORE_STAFF_BOTTOM as i16 - sp - 4;
 
     for local_row in 0..STAFF_AREA_ROWS {
@@ -145,12 +145,12 @@ pub fn render(frame: &mut Frame, app: &App) {
 
     render_staff_area(frame, main[1], app);
 
-    let octave = (app.current_note.midi / 12) as i16 - 1;
+    let note_name = staff_position_name(app.current_note.staff_position);
     let info = Paragraph::new(format!(
-        "Note on staff (octave {}) - MIDI: {}   |   Staff position: {}",
-        octave,
-        app.current_note.midi,
-        midi_to_staff_position(app.current_note.midi),
+        "Staff position: {}  |  Note: {}  |  Pitch class: {}",
+        app.current_note.staff_position,
+        note_name,
+        app.current_note.pitch_class,
     ))
     .style(Style::default().fg(Color::DarkGray));
     frame.render_widget(info, main[2]);
