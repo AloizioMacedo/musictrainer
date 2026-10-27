@@ -8,26 +8,17 @@ body:
       value: |
         Thanks for taking the time to report a bug. Please fill out the sections below.
 
-  - type: checkboxes
+  - type: textarea
     id: versions
     attributes:
       label: Affected versions
-      description: Select every version where you can reproduce the bug.
-      options:
-        - label: "3.8"
-        - label: "3.7"
-        - label: "3.6"
-
-  - type: textarea
-    id: other-versions
-    attributes:
-      label: Other affected versions
-      description: Add any other versions where you can reproduce the bug as a checklist
-      placeholder: |
-        - [ ] 3.5
-        - [ ] 3.4
+      description: Add any others as new lines.
+      value: |
+        - [ ] 3.8
+        - [ ] 3.7
+        - [ ] 3.6
     validations:
-      required: false
+      required: true
 
   - type: textarea
     id: description
