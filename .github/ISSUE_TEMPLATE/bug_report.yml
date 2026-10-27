@@ -19,6 +19,17 @@ body:
         - label: "3.6"
 
   - type: textarea
+    id: other-versions
+    attributes:
+      label: Other affected versions
+      description: Add any other versions where you can reproduce the bug as a checklist
+      placeholder: |
+        - [ ] 3.5
+        - [ ] 3.4
+    validations:
+      required: false
+
+  - type: textarea
     id: description
     attributes:
       label: Describe the bug
