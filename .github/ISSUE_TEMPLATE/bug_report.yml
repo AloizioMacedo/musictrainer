@@ -15,11 +15,8 @@ body:
       description: Select every version where you can reproduce the bug.
       options:
         - label: "3.8"
-          default: true
         - label: "3.7"
-          default: true
         - label: "3.6"
-          default: true
 
   - type: textarea
     id: description
